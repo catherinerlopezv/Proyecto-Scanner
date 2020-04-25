@@ -1,0 +1,9 @@
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\bin\Debug\Proyecto.exe.config
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\bin\Debug\Proyecto.exe
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\bin\Debug\Proyecto.pdb
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.csprojAssemblyReference.cache
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.Form1.resources
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.Properties.Resources.resources
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.csproj.GenerateResource.cache
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.exe
+C:\Users\Cathy\Documents\proyecto1\Proyecto\Proyecto\obj\Debug\Proyecto.pdb

@@ -1,0 +1,74 @@
+Inicio  	= SETS ;
+
+SETS		= "SETS" { ListSet } ;
+ListSet	= Id "=" Let 
+			| Id "=" Dig
+			| Id "=" Chart
+			;
+			
+TOKENS		= "TOKENS" { ListToken } ;
+ListToken	= IdT "=" TOKEN;
+
+
+TOKEN		= Id Id "*" 
+			| "'" Caracteres "'" 
+			| "'" Letra "'" 
+			| "'" Caracteres "'" "'" Caracteres "'" 
+			| "'" Letra "'" "'" Letra "'"
+			| "'" """" Id """" "'"| "'" "'" "'" Id "'" "'" "'"
+			| Id "(" Id "|" Id ")" "*" "{" "RESERVADAS" "(" ")" "}"
+			;
+
+ACTIONS		= "ACTIONS" "RESERVADAS" "(" ")" "{" ListAction "}" ;
+ListAction	= IdAct "=" "'" IdRe "'" ;
+
+ERRORS		= Prefijo "ERROR" "=" {IdERROR} ;
+
+IdERROR 	= Numero
+			| Numero Numero
+			;
+Prefijo		= Letra
+			| Letra Letra
+			;
+
+IdRe		= Letra
+			| Letra Letra
+			;
+			
+IdAct		= Numero 
+			| Numero Numero
+			;
+
+Chart		= "CHR" "(" Numero Numero")"
+			| "CHR" "(" Numero Numero Numero ")" 
+			;
+			
+Let			= "'" Letra "'" ".." "'" Letra "'" "+" "'" Letra "'" ".." "'" Letra "'"
+			| Let "+" "'" "_" "'" 
+			;
+
+Dig			= "'" Numero "'" ".." "'" Numero "'" ;
+			
+Id			= "LETRA"
+			| "DIGITO"
+			| "CHARSET"
+			;
+			
+IdT			= "TOKEN" Numero 
+			| "TOKEN" Numero Numero
+			;
+			
+Numero		= "0"| "1"| "2"| "3"| "4"| "5"| "6"| "7"| "8"| "9" ;
+Letra		= "A"| "B"| "C"| "D"| "E"| "F"| "G"| "H"| "I"| "J"| "K"| "L"| "M"| "N"| "O"| "P"| "Q"| "R"| "S"| "T" | "U"| "V"| "W"| "X"| "Y"| "Z"
+			|"a"| "b"| "c"| "d"| "e"| "f"| "g"| "h"| "i"| "j"| "k"| "l"| "m"| "n"| "o"| "p"| "q"| "r"| "s"| "t" | "u"| "v"| "w"| "x"| "y"| "z"
+			;
+Caracteres	= "="| "<"| ">"| "+"| "_"| "*"
+			| "("| ")"| ";"| ":"| "."| ","| "|"
+			| "{"| "}"| "["| "]"
+			;
+
+
+
+
+
+

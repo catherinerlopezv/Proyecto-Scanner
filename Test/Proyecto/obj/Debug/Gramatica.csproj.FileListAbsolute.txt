@@ -1,0 +1,9 @@
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\bin\Debug\Proyecto.exe.config
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\bin\Debug\Proyecto.exe
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\bin\Debug\Proyecto.pdb
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Gramatica.csprojAssemblyReference.cache
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Proyecto.FrmTestGramatica.resources
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Proyecto.Properties.Resources.resources
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Gramatica.csproj.GenerateResource.cache
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Proyecto.exe
+C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\obj\Debug\Proyecto.pdb

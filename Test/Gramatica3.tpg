@@ -1,0 +1,95 @@
+//@TinyPG - a Tiny Parser Generator v1.2
+//Copyright © Herre Kuijpers 2008-2010
+//Simple expression calculator
+<% @TinyPG Language="C#" OutputPath="C:\Users\Cathy\Documents\Proyecto\Test\Proyecto\" %>
+
+// include text highlighting as part of the input window
+<% @TextHighlighter Generate="true" %>
+
+// Palabras Reservadas
+[Color(0, 100, 0)] 	PR_SETS	-> @"SETS";
+[Color(0, 120, 50)] 	PR_TOKENS     -> @"TOKENS";
+[Color(0, 130, 40)] 	PR_TOKEN      -> @"TOKEN";
+[Color(0, 140, 20)] 	PR_ACCIONES   -> @"ACTIONS";
+[Color(0, 150, 10)] 	PR_RESERVADAS -> @"RESERVADAS";
+
+// Expresiones
+			EOF         	-> @"^\s*$";
+[Color(0, 20, 100)] 	NUMERO 	-> @"[0-9]+";
+[Color(0, 10, 100)] 	CARACTER 	-> @"(\S)";
+[Color(0, 30, 255)] 	MODIFICADOR 	-> @"(\*|\+|\?)";
+[Color(0, 40, 200)] 	COMILLA 	-> @"(\')";
+[Color(0, 50, 170)] 	DIGITO 	-> @"(\d)";
+[Color(0, 60, 160)] 	LETRA  	-> @"([A-Za-z_])";
+[Color(0, 70, 155)] 	IDERROR  	-> @"([A-Za-z]*[E][R][R][O][R])";
+[Color(0, 80, 145)] 	IDENTIFICADOR	-> @"(?!SETS|TOKENS|TOKEN|ACTIONS|.*?ERROR)^[A-Za-z][A-Za-z0-9]*";
+[Color(0, 90, 120)] 	IDENTIFICADOR2 -> @"(((?!SETS)|(?!TOKENS)|(?!TOKEN)|(?!ACTIONS))([A-Za-z][a-zA-Z0-9_]*))";
+[Color(0, 100, 110)] 	PABIERTO 	->  @"\(";
+[Color(0, 120, 100)] 	PCERRADO	->  @"\)";
+[Color(0, 130, 70)] 	MAS		-> @"(\+)"; 
+[Color(0, 140, 50)] 	IGUAL		-> @"=";
+[Color(0, 150, 40)] 	LLABIERTA	-> @"{";
+[Color(0, 160, 20)] 	LLCERRADA	-> @"}";
+[Color(0, 170, 20)] 	DOBLEPUNTO	-> @"..";
+[Color(0, 180, 10)] 	CHARF	       -> @"[C][H][R]";
+
+PUNTOCOMA            -> @";";
+SALTOLINEA 		-> @"[\n|\r|\r\n]+";
+
+[Skip] 		WHITESPACE  	-> @"[\s\t]+";
+
+// Reglas
+Start -> Gramatica EOF;
+
+Gramatica -> Sets Tokens ;
+
+Sets -> (PR_SETS CuerpoSets)? ;
+
+CuerpoSets -> (ListaSets)+ ;
+
+ListaSets -> IDENTIFICADOR IGUAL SetDef ; 
+
+SetDef -> Def (MAS Def)* ;
+
+Def -> COMILLA ((LETRA COMILLA (DOBLEPUNTO COMILLA LETRA COMILLA)?) | (DIGITO COMILLA (DOBLEPUNTO COMILLA DIGITO COMILLA)?))
+    |  CHARF PABIERTO NUMERO PCERRADO (DOBLEPUNTO CHARF PABIERTO NUMERO PCERRADO)? ;
+
+Tokens -> DeclaracionTokens Acciones ;
+
+DeclaracionTokens -> PR_TOKENS CuerpoTokens ;
+
+CuerpoTokens -> (ListaTokens)+ ;
+
+ListaTokens -> PR_TOKEN NUMERO IGUAL ListaDefToken ;
+
+ListaDefToken -> (DefToken)+ ;
+
+DefToken -> SimpleToken
+         |  AgrupaToken ;
+
+SimpleToken -> COMILLA CARACTER COMILLA (MODIFICADOR)? 
+             | LLABIERTA IDENTIFICADOR PABIERTO PCERRADO LLCERRADA
+             | IDENTIFICADOR (MODIFICADOR)? ;
+
+AgrupaToken -> PABIERTO ListaDefToken PCERRADO (MODIFICADOR)? ;
+
+Acciones -> DeclaracionAcciones Errores ;
+
+DeclaracionAcciones -> PR_ACCIONES CuerpoAcciones ;
+
+CuerpoAcciones -> FuncionReservadas ListaFunciones ;
+
+FuncionReservadas -> PR_RESERVADAS PABIERTO PCERRADO CuerpoFunciones ;
+
+CuerpoFunciones -> LLABIERTA (ListaAcciones)+ LLCERRADA ;
+
+ListaAcciones -> NUMERO IGUAL COMILLA IDENTIFICADOR COMILLA ;
+
+ListaFunciones -> (OtrasFunciones)* ;
+
+OtrasFunciones -> IDENTIFICADOR PABIERTO PCERRADO CuerpoFunciones ;
+
+Errores -> (ListaErrores)+ ;
+
+ListaErrores -> IDERROR IGUAL NUMERO ;
+
