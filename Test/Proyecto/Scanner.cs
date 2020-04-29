@@ -94,10 +94,6 @@ namespace TinyPG
             Patterns.Add(TokenType.IDENTIFICADOR, regex);
             Tokens.Add(TokenType.IDENTIFICADOR);
 
-            regex = new Regex(@"(((?!SETS)|(?!TOKENS)|(?!TOKEN)|(?!ACTIONS))([A-Za-z][a-zA-Z0-9_]*))", RegexOptions.Compiled);
-            Patterns.Add(TokenType.IDENTIFICADOR2, regex);
-            Tokens.Add(TokenType.IDENTIFICADOR2);
-
             regex = new Regex(@"\(", RegexOptions.Compiled);
             Patterns.Add(TokenType.PABIERTO, regex);
             Tokens.Add(TokenType.PABIERTO);
@@ -114,17 +110,21 @@ namespace TinyPG
             Patterns.Add(TokenType.IGUAL, regex);
             Tokens.Add(TokenType.IGUAL);
 
-            regex = new Regex(@"{", RegexOptions.Compiled);
+            regex = new Regex(@"\{", RegexOptions.Compiled);
             Patterns.Add(TokenType.LLABIERTA, regex);
             Tokens.Add(TokenType.LLABIERTA);
 
-            regex = new Regex(@"}", RegexOptions.Compiled);
+            regex = new Regex(@"\}", RegexOptions.Compiled);
             Patterns.Add(TokenType.LLCERRADA, regex);
             Tokens.Add(TokenType.LLCERRADA);
 
-            regex = new Regex(@"..", RegexOptions.Compiled);
+            regex = new Regex(@"\.\.", RegexOptions.Compiled);
             Patterns.Add(TokenType.DOBLEPUNTO, regex);
             Tokens.Add(TokenType.DOBLEPUNTO);
+
+            regex = new Regex(@"\|", RegexOptions.Compiled);
+            Patterns.Add(TokenType.OPCIONAL, regex);
+            Tokens.Add(TokenType.OPCIONAL);
 
             regex = new Regex(@"[C][H][R]", RegexOptions.Compiled);
             Patterns.Add(TokenType.CHARF, regex);
@@ -314,47 +314,49 @@ namespace TinyPG
             CuerpoTokens= 11,
             ListaTokens= 12,
             ListaDefToken= 13,
-            DefToken= 14,
-            SimpleToken= 15,
-            AgrupaToken= 16,
-            Acciones= 17,
-            DeclaracionAcciones= 18,
-            CuerpoAcciones= 19,
-            FuncionReservadas= 20,
-            CuerpoFunciones= 21,
-            ListaAcciones= 22,
-            ListaFunciones= 23,
-            OtrasFunciones= 24,
-            Errores = 25,
-            ListaErrores= 26,
+            CondicionToken= 14,
+            OpcionalToken= 15,
+            DefToken= 16,
+            SimpleToken= 17,
+            AgrupaToken= 18,
+            Acciones= 19,
+            DeclaracionAcciones= 20,
+            CuerpoAcciones= 21,
+            FuncionReservadas= 22,
+            CuerpoFunciones= 23,
+            ListaAcciones= 24,
+            ListaFunciones= 25,
+            OtrasFunciones= 26,
+            Errores = 27,
+            ListaErrores= 28,
 
             //Terminal tokens:
-            PR_SETS = 27,
-            PR_TOKENS= 28,
-            PR_TOKEN= 29,
-            PR_ACCIONES= 30,
-            PR_RESERVADAS= 31,
-            EOF     = 32,
-            NUMERO  = 33,
-            CARACTER= 34,
-            MODIFICADOR= 35,
-            COMILLA = 36,
-            DIGITO  = 37,
-            LETRA   = 38,
-            IDERROR = 39,
-            IDENTIFICADOR= 40,
-            IDENTIFICADOR2= 41,
-            PABIERTO= 42,
-            PCERRADO= 43,
-            MAS     = 44,
-            IGUAL   = 45,
-            LLABIERTA= 46,
-            LLCERRADA= 47,
-            DOBLEPUNTO= 48,
-            CHARF   = 49,
-            PUNTOCOMA= 50,
-            SALTOLINEA= 51,
-            WHITESPACE= 52
+            PR_SETS = 29,
+            PR_TOKENS= 30,
+            PR_TOKEN= 31,
+            PR_ACCIONES= 32,
+            PR_RESERVADAS= 33,
+            EOF     = 34,
+            NUMERO  = 35,
+            CARACTER= 36,
+            MODIFICADOR= 37,
+            COMILLA = 38,
+            DIGITO  = 39,
+            LETRA   = 40,
+            IDERROR = 41,
+            IDENTIFICADOR= 42,
+            PABIERTO= 43,
+            PCERRADO= 44,
+            MAS     = 45,
+            IGUAL   = 46,
+            LLABIERTA= 47,
+            LLCERRADA= 48,
+            DOBLEPUNTO= 49,
+            OPCIONAL= 50,
+            CHARF   = 51,
+            PUNTOCOMA= 52,
+            SALTOLINEA= 53,
+            WHITESPACE= 54
     }
 
     public class Token

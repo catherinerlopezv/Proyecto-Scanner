@@ -65,6 +65,25 @@ namespace Proyecto
             {
                 textBox2.Text = textBox2.Text + "\nLectura completada";
                 textBox2.Text = textBox2.Text + tree.PrintTree();
+                string graphVizString = tree.Dotify();
+                //textBox2.Text = textBox2.Text + graphVizString;
+                //graphVizString = @"digraph G {
+                //                        rankdir = BT;
+                //                        node[
+                //                          fontname = ""Bitstream Vera Sans""
+                //                          fontsize = 10
+                //                          shape = ""record""
+                //                        ]
+                //                        edge[
+                //                          fontname = ""Bitstream Vera Sans""
+                //                          fontsize = 8
+                //                          arrowhead = ""empty""
+                //                        ]
+                //                        A->B
+                //                        C->B
+                //                        { rank = same}
+                //                    }";
+                GraficaArbol.Image = Graphviz.RenderImage(graphVizString, "jpg");
 
             }
 
@@ -76,6 +95,11 @@ namespace Proyecto
         {
             TextBoxWriter writer = new TextBoxWriter(textBox2);
             Console.SetOut(writer);
+        }
+
+        private void GraficaArbol_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

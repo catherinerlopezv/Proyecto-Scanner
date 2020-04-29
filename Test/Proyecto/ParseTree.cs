@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace TinyPG
@@ -105,6 +106,117 @@ namespace TinyPG
         {
             return Nodes[0].Eval(this, paramlist);
         }
+
+
+        public string Dotify()
+        {
+            StringBuilder dot = new StringBuilder();
+            ParseTree node = this;
+
+            dot.Append(this.GenerateDotHeader());
+
+            //this.GenerateEntity(dot, node);
+            List<string> tempDot = new List<string>();
+            this.GenerateGeneralizations(tempDot, node);
+            IEnumerable<string> distinctLines = tempDot.Distinct();
+            foreach (string line in distinctLines)
+            {
+                dot.AppendLine(line);
+            }
+
+            dot.Append(this.GenerateDotFooter());
+
+            return dot.ToString();
+        }
+
+        private string GenerateDotHeader()
+        {
+            return @"
+      digraph G {
+        rankdir=BT;
+
+        node [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 10
+          shape = ""record""
+        ]
+
+        edge [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 8
+          arrowhead = ""empty""
+        ]
+";
+        }
+
+        private string GenerateDotFooter()
+        {
+            return "\n}\n";
+        }
+
+        private void GenerateEntity(StringBuilder dot, ParseNode node)
+        {
+            // Entity [
+            //   label = "{Entity|+ property : type\l ... |+ method() : void\l}"
+            // ]
+            dot.AppendLine("\n");
+            string label = "";
+            label = "\n" + node.Token.Type.ToString() +
+              " [ label = \"{" +  // node.Token.Type.ToString() + "|" +
+              node.Token.Type.ToString() + ':' + node.Token.Value;
+            label += "}\" ]";
+            dot.Append(label);
+
+            foreach (ParseNode n in node.Nodes)
+                GenerateEntity(dot, n);
+        }
+
+        private void GenerateGeneralizations(List<string> lista, ParseNode node)
+        {
+            // Sub1 -> Entity
+            // Sub2 -> Entity
+            // { rank=same Sub1, Sub2 }
+            string label = "";
+            foreach (ParseNode sub in node.Nodes)
+            {
+                GenerateGeneralizations(lista, sub);
+                label = sub.Token.Type.ToString() + " -> " + node.Token.Type.ToString();
+                lista.Add(label);
+            }
+            
+            //if (node.Nodes.Count > 1)
+            //{
+            //    label += "\n{ rank=same " +
+            //      string.Join(",", node.Nodes.Select(s => s.Text)) + "}";
+            //    dot.Append(label);
+            //}
+        }
+
+        // TODO reuse from Emitter ;-)
+        private string PascalCase(string text)
+        {
+            return string.Join("",
+              text.Split('-').Select(x =>
+                x.First().ToString().ToUpper() + x.ToLower().Substring(1)
+              )
+            );
+        }
+
+        private string GenerateType(string type)
+        {
+            if (type == null) { return "Object"; }
+            if (type.Equals("<string>")) { return "string"; }
+            if (type.Equals("<bool>")) { return "bool"; }
+            return this.PascalCase(type);
+        }
+
+        private string PluralSuffix(string text)
+        {
+            if (text.EndsWith("x")) { return "es"; }
+            if (text.EndsWith("s")) { return ""; }
+            return "s";
+        }
+
     }
 
     [Serializable]
@@ -213,6 +325,12 @@ namespace TinyPG
                     break;
                 case TokenType.ListaDefToken:
                     Value = EvalListaDefToken(tree, paramlist);
+                    break;
+                case TokenType.CondicionToken:
+                    Value = EvalCondicionToken(tree, paramlist);
+                    break;
+                case TokenType.OpcionalToken:
+                    Value = EvalOpcionalToken(tree, paramlist);
                     break;
                 case TokenType.DefToken:
                     Value = EvalDefToken(tree, paramlist);
@@ -337,6 +455,20 @@ namespace TinyPG
         }
 
         protected virtual object EvalListaDefToken(ParseTree tree, params object[] paramlist)
+        {
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
+        }
+
+        protected virtual object EvalCondicionToken(ParseTree tree, params object[] paramlist)
+        {
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
+        }
+
+        protected virtual object EvalOpcionalToken(ParseTree tree, params object[] paramlist)
         {
             foreach (var node in Nodes)
                 node.Eval(tree, paramlist);

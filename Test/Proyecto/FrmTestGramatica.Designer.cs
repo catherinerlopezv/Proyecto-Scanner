@@ -39,7 +39,11 @@
             this.rtBox = new System.Windows.Forms.RichTextBox();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.GraficaArbol = new System.Windows.Forms.PictureBox();
             this.flowLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GraficaArbol)).BeginInit();
             this.SuspendLayout();
             // 
             // Nombre
@@ -96,7 +100,7 @@
             this.flowLayoutPanel1.Controls.Add(this.textBox2);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 62);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1239, 443);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1239, 311);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // TxtAr
@@ -105,14 +109,14 @@
             this.TxtAr.Multiline = true;
             this.TxtAr.Name = "TxtAr";
             this.TxtAr.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.TxtAr.Size = new System.Drawing.Size(349, 440);
+            this.TxtAr.Size = new System.Drawing.Size(349, 308);
             this.TxtAr.TabIndex = 7;
             // 
             // splitter1
             // 
             this.splitter1.Location = new System.Drawing.Point(358, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 440);
+            this.splitter1.Size = new System.Drawing.Size(3, 308);
             this.splitter1.TabIndex = 10;
             this.splitter1.TabStop = false;
             // 
@@ -120,7 +124,7 @@
             // 
             this.rtBox.Location = new System.Drawing.Point(367, 3);
             this.rtBox.Name = "rtBox";
-            this.rtBox.Size = new System.Drawing.Size(416, 440);
+            this.rtBox.Size = new System.Drawing.Size(416, 308);
             this.rtBox.TabIndex = 9;
             this.rtBox.Text = "";
             // 
@@ -128,7 +132,7 @@
             // 
             this.splitter2.Location = new System.Drawing.Point(789, 3);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(3, 440);
+            this.splitter2.Size = new System.Drawing.Size(3, 308);
             this.splitter2.TabIndex = 11;
             this.splitter2.TabStop = false;
             // 
@@ -138,14 +142,36 @@
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox2.Size = new System.Drawing.Size(435, 440);
+            this.textBox2.Size = new System.Drawing.Size(435, 308);
             this.textBox2.TabIndex = 8;
+            // 
+            // panel1
+            // 
+            this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.GraficaArbol);
+            this.panel1.Location = new System.Drawing.Point(1, 379);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1250, 283);
+            this.panel1.TabIndex = 10;
+            // 
+            // GraficaArbol
+            // 
+            this.GraficaArbol.BackColor = System.Drawing.Color.LightCyan;
+            this.GraficaArbol.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.GraficaArbol.Location = new System.Drawing.Point(3, 3);
+            this.GraficaArbol.Name = "GraficaArbol";
+            this.GraficaArbol.Size = new System.Drawing.Size(1239, 277);
+            this.GraficaArbol.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.GraficaArbol.TabIndex = 10;
+            this.GraficaArbol.TabStop = false;
+            this.GraficaArbol.Click += new System.EventHandler(this.GraficaArbol_Click);
             // 
             // FrmTestGramatica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1255, 511);
+            this.ClientSize = new System.Drawing.Size(1255, 662);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.Leer);
             this.Controls.Add(this.Buscar);
@@ -157,6 +183,9 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GraficaArbol)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,6 +204,8 @@
         private System.Windows.Forms.RichTextBox rtBox;
         private System.Windows.Forms.Splitter splitter2;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.PictureBox GraficaArbol;
     }
 }
 
