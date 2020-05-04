@@ -40,13 +40,12 @@ namespace Proyecto
         {
 
             String Leer = TxtAr.Text;
-            rtBox.Text = Leer;
-            textBox2.Text = "Comenzando la lectura  \n\r\n";
+            txtTokens.Text = "Comenzando la lectura  \n\r\n";
 
             Scanner scanner = new Scanner();
             Parser parser = new Parser(scanner);
 
-            TextHighlighter highlighter = new TextHighlighter(rtBox, scanner, parser);
+            //TextHighlighter highlighter = new TextHighlighter(rtBox, scanner, parser);
 
             ParseTree tree = parser.Parse(Leer);
 
@@ -57,14 +56,28 @@ namespace Proyecto
             {
                 foreach (ParseError error in tree.Errors)
                 {
-                    textBox2.Text = textBox2.Text + "Línea: " + error.Line + " Columna: " + error.Column + " Mensaje " + error.Message + "\n\r\n";
+                    txtTokens.Text = txtTokens.Text + "Línea: " + error.Line + " Columna: " + error.Column + " Mensaje " + error.Message + "\n\r\n";
                 }
-                textBox2.Text = textBox2.Text + "\nLectura con Errores"; 
+                txtTokens.Text = txtTokens.Text + "\nLectura con Errores"; 
             }
             else
             {
-                textBox2.Text = textBox2.Text + "\nLectura completada";
-                textBox2.Text = textBox2.Text + tree.PrintTree();
+                txtTokens.Text = txtTokens.Text + "\nLectura completada   \n\r\n";
+                ExprTree expresion = new ExprTree();
+                expresion.GeneraArbolExpr(tree);
+                txtTokens.Text = txtTokens.Text + expresion.TokensExpr.ToString();
+                txtTokens.Text = txtTokens.Text + "\n\r\n Recorrido  \n\r\n";
+                txtTokens.Text = txtTokens.Text + expresion.InFijo();
+                txtTokens.Text = txtTokens.Text + "\n\r\n Recorrido  \n\r\n";
+                txtTokens.Text = txtTokens.Text + expresion.Dotify();
+                List<string[]> rows = expresion.TablaFirsLastNullable();
+                dgv_fln.Rows.Clear();
+                foreach (string[] row in rows)
+                {
+                    dgv_fln.Rows.Add(row);
+                }
+                string graphVizString = tree.Dotify();
+                GraficaArbol.Image = Graphviz.RenderImage(graphVizString, "jpg");
 
             }
 
@@ -74,8 +87,18 @@ namespace Proyecto
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            TextBoxWriter writer = new TextBoxWriter(textBox2);
-            Console.SetOut(writer);
+            //TextBoxWriter writer = new TextBoxWriter(textBox2);
+            //Console.SetOut(writer);
+        }
+
+        private void GraficaArbol_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
