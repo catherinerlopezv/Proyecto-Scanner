@@ -516,28 +516,28 @@ namespace TinyPG
                     case TokenType.IDENTIFICADOR:
                         sb.Append(@"{{\cf13 ");
                         break;
-                    case TokenType.IDENTIFICADOR2:
+                    case TokenType.PABIERTO:
                         sb.Append(@"{{\cf14 ");
                         break;
-                    case TokenType.PABIERTO:
+                    case TokenType.PCERRADO:
                         sb.Append(@"{{\cf15 ");
                         break;
-                    case TokenType.PCERRADO:
+                    case TokenType.MAS:
                         sb.Append(@"{{\cf16 ");
                         break;
-                    case TokenType.MAS:
+                    case TokenType.IGUAL:
                         sb.Append(@"{{\cf17 ");
                         break;
-                    case TokenType.IGUAL:
+                    case TokenType.LLABIERTA:
                         sb.Append(@"{{\cf18 ");
                         break;
-                    case TokenType.LLABIERTA:
+                    case TokenType.LLCERRADA:
                         sb.Append(@"{{\cf19 ");
                         break;
-                    case TokenType.LLCERRADA:
+                    case TokenType.DOBLEPUNTO:
                         sb.Append(@"{{\cf20 ");
                         break;
-                    case TokenType.DOBLEPUNTO:
+                    case TokenType.OPCIONAL:
                         sb.Append(@"{{\cf21 ");
                         break;
                     case TokenType.CHARF:
@@ -553,7 +553,7 @@ namespace TinyPG
         // define the color palette to be used here
         private void AddRtfHeader(StringBuilder sb)
         {
-            sb.Insert(0, @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Consolas;}}{\colortbl;\red0\green100\blue0;\red0\green120\blue50;\red0\green130\blue40;\red0\green140\blue20;\red0\green150\blue10;\red0\green20\blue100;\red0\green10\blue100;\red0\green30\blue255;\red0\green40\blue200;\red0\green50\blue170;\red0\green60\blue160;\red0\green70\blue155;\red0\green80\blue145;\red0\green90\blue120;\red0\green100\blue110;\red0\green120\blue100;\red0\green130\blue70;\red0\green140\blue50;\red0\green150\blue40;\red0\green160\blue20;\red0\green170\blue20;\red0\green180\blue10;}\viewkind4\uc1\pard\lang1033\f0\fs20");
+            sb.Insert(0, @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Consolas;}}{\colortbl;\red72\green61\blue139;\red72\green61\blue139;\red106\green90\blue205;\red72\green61\blue139;\red106\green90\blue205;\red0\green20\blue100;\red102\green205\blue170;\red0\green30\blue255;\red0\green40\blue200;\red0\green50\blue170;\red0\green139\blue139;\red128\green0\blue0;\red188\green143\blue143;\red0\green100\blue110;\red0\green120\blue100;\red221\green160\blue221;\red0\green140\blue50;\red0\green150\blue40;\red0\green160\blue20;\red238\green130\blue238;\red106\green90\blue205;\red0\green180\blue10;}\viewkind4\uc1\pard\lang1033\f0\fs20");
         }
 
         private void AddRtfEnd(StringBuilder sb)
