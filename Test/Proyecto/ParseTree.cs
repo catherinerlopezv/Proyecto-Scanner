@@ -3,10 +3,637 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 namespace TinyPG
 {
+
+    public class Pattern
+    {
+        public string Nombre { get; set; }
+        public string Numero { get; set; }
+        public string Patron { get; set; }
+    }
+
+    public class TablaPatterns
+    {
+        public List<Pattern> ListaSets { get; set; }
+        public List<Pattern> ListaTokens { get; set; }
+        public List<Pattern> ListaAcciones { get; set; }
+
+        public List<Pattern> ListaErrores { get; set; }
+
+        public TablaPatterns ()
+        {
+            ListaSets = new List<Pattern>();
+            ListaTokens = new List<Pattern>();
+            ListaAcciones = new List<Pattern>();
+            ListaErrores = new List<Pattern>();
+        }
+
+        public void GeneraTabla(ParseTree tree)
+        {
+            foreach (ParseNode node in tree.Nodes)
+            {
+                FindSets(node);
+            }
+            foreach (ParseNode node in tree.Nodes)
+            {
+                FindTokens(node);
+            }
+            foreach (ParseNode node in tree.Nodes)
+            {
+                FindAcciones(node);
+            }
+            foreach (ParseNode node in tree.Nodes)
+            {
+                FindErrores(node);
+            }
+        }
+
+
+        private void FindSets(ParseNode node)
+        {
+            foreach (ParseNode n in node.Nodes)
+            {
+                if (node.Token.Type == TokenType.ListaSets)
+                {
+                    if (n.Token.Type == TokenType.IDENTIFICADOR)
+                    {
+                        Pattern nuevoSet = new Pattern();
+                        nuevoSet.Nombre = n.Token.Text;
+                        ListaSets.Add(nuevoSet);
+                    }
+                }
+                if (n.Token.Type == TokenType.Def)
+                {
+                    Pattern lset = ListaSets.Last();
+                    lset.Patron += '[';
+                }
+                if (node.Token.Type == TokenType.Def)
+                {
+                    if (n.Token.Type == TokenType.LETRA || n.Token.Type == TokenType.DIGITO)
+                    {
+                        Pattern lset = ListaSets.Last();
+                        lset.Patron += n.Token.Text;
+                        lset.Patron += ']';
+                    }
+                    if (n.Token.Type == TokenType.DOBLEPUNTO)
+                    {
+                        Pattern lset = ListaSets.Last();
+                        if (lset.Patron.ElementAt(lset.Patron.Length - 1) == ']')
+                        {
+                            lset.Patron = lset.Patron.Substring(0, lset.Patron.Length - 1);
+                        }
+                        lset.Patron += '-';
+                    }
+                }
+                FindSets(n);
+            }
+        }
+
+        private void FindTokens(ParseNode node)
+        {
+            foreach (ParseNode n in node.Nodes)
+            {
+                if (n.Token.Type == TokenType.PR_TOKEN)
+                {
+                    Pattern nuevoToken = new Pattern();
+                    ListaTokens.Add(nuevoToken);
+                }
+                if (node.Token.Type == TokenType.ListaTokens)
+                {
+                    if (n.Token.Type == TokenType.NUMERO)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Numero = n.Token.Text;
+                    }
+                }
+                if (node.Token.Type == TokenType.SimpleToken)
+                {
+                    if (n.Token.Type == TokenType.CARACTER)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        Regex rx = new Regex(@"\W",
+                                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                        if (rx.IsMatch(n.Token.Text))
+                        {
+                            ltoken.Patron += "[\\" + n.Token.Text + ']';
+                        } else
+                        {
+                            ltoken.Patron += '[' + n.Token.Text + ']';
+                        }
+                    }
+                    if (n.Token.Type == TokenType.IDENTIFICADOR)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        foreach (Pattern lset in ListaSets)
+                        {
+                            if (lset.Nombre == n.Token.Text)
+                            {
+                                ltoken.Patron += lset.Patron;
+                                break;
+                            }
+                        }
+                    }
+                    if (n.Token.Type == TokenType.MODIFICADOR)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Patron += n.Token.Text;
+                    }
+                }
+                if (node.Token.Type == TokenType.OpcionalToken)
+                {
+                    if (n.Token.Type == TokenType.OPCIONAL)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Patron += n.Token.Text;
+                    }
+
+                }
+                if (node.Token.Type == TokenType.AgrupaToken)
+                {
+                    if (n.Token.Type == TokenType.PABIERTO)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Patron += n.Token.Text;
+                    }
+                    if (n.Token.Type == TokenType.PCERRADO)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Patron += n.Token.Text;
+                    }
+                    if (n.Token.Type == TokenType.MODIFICADOR)
+                    {
+                        Pattern ltoken = ListaTokens.Last();
+                        ltoken.Patron += n.Token.Text;
+                    }
+                }
+                FindTokens(n);
+            }
+        }
+
+        private void FindAcciones(ParseNode node)
+        {
+            foreach (ParseNode n in node.Nodes)
+            {
+                if (node.Token.Type == TokenType.ListaAcciones)
+                {
+                    if (n.Token.Type == TokenType.NUMERO)
+                    {
+                        Pattern laccion = new Pattern();
+                        laccion.Numero = n.Token.Text;
+                        ListaAcciones.Add(laccion);
+                    }
+                    if (n.Token.Type == TokenType.IDENTIFICADOR)
+                    {
+                        Pattern laccion = ListaAcciones.Last();
+                        for (int idx=0; idx < n.Token.Text.Length; idx++) 
+                        {
+                            laccion.Patron += '[' + n.Token.Text.Substring(idx, 1) + ']';
+                        }
+                    }
+                }
+                FindAcciones(n);
+            }
+        }
+
+        private void FindErrores(ParseNode node)
+        {
+            foreach (ParseNode n in node.Nodes)
+            {
+                if (node.Token.Type == TokenType.ListaErrores)
+                {
+                    if (n.Token.Type == TokenType.IDERROR)
+                    {
+                        Pattern lerror = new Pattern();
+                        lerror.Nombre = n.Token.Text;
+                        ListaErrores.Add(lerror);
+                    }
+                    if (n.Token.Type == TokenType.NUMERO)
+                    {
+                        Pattern lerror = ListaErrores.Last();
+                        lerror.Numero = n.Token.Text;
+                    }
+                }
+                FindErrores(n);
+            }
+        }
+    
+        public string ImprimeTabla()
+        {
+            StringBuilder ltext = new StringBuilder();
+            ltext.AppendLine("Sets");
+            foreach (Pattern lista in ListaSets)
+            {
+                ltext.Append(lista.Nombre);
+                ltext.Append(" : ");
+                ltext.AppendLine(lista.Patron);
+            }
+            ltext.AppendLine("Tokens");
+            foreach (Pattern lista in ListaTokens)
+            {
+                ltext.Append(lista.Numero);
+                ltext.Append(" : ");
+                ltext.AppendLine(lista.Patron);
+            }
+            ltext.AppendLine("Acciones");
+            foreach (Pattern lista in ListaAcciones)
+            {
+                ltext.Append(lista.Numero);
+                ltext.Append(" : ");
+                ltext.AppendLine(lista.Patron);
+            }
+            ltext.AppendLine("Errores");
+            foreach (Pattern lista in ListaErrores)
+            {
+                ltext.Append(lista.Nombre);
+                ltext.Append(" : ");
+                ltext.AppendLine(lista.Numero);
+            }
+            return ltext.ToString();
+        }
+    }
+
+    public class NodoToken
+    {
+        public Token token { get; set; }
+        public NodoToken Izquierdo { get; set; }
+        public NodoToken Derecho { get; set; }
+
+        public int MaxNumero (NodoToken raiz)
+        {
+            int contador = 0;
+            // recorre hacia la derecha
+            NodoToken derecho = raiz.Derecho;
+            while (derecho != null)
+            {
+                contador = derecho.token.Number;
+            }
+            return contador;
+        }
+
+    }
+
+    public class ExprTree
+    {
+        public NodoToken Raiz { get; set; }
+        public List<NodoToken> ListaExpr { get; set; }
+
+        public int NumeroHoja { get; set; }
+
+        public StringBuilder TokensExpr { get; set; }
+
+        public Token Anterior { get; set; }
+
+        public ExprTree ()
+        {
+            Raiz = null;
+            NumeroHoja = 0;
+            TokensExpr = new StringBuilder();
+            ListaExpr = new List<NodoToken>();
+            ListaExpr.Add(Raiz);
+            Anterior = null;
+        }
+
+        private void AgregarToken(NodoToken nuevo)
+        {
+            NodoToken raiz = ListaExpr.Last();
+            if (nuevo.token.Type == TokenType.IDENTIFICADOR || nuevo.token.Type == TokenType.CARACTER)
+            {
+                NumeroHoja += 1;
+                nuevo.token.Number = NumeroHoja;
+                nuevo.token.First.Add(NumeroHoja);
+                nuevo.token.Last.Add(NumeroHoja);
+                nuevo.token.Nullable = false;
+            }
+            if (raiz == null)
+            {
+                raiz = nuevo;
+                //raiz.Izquierdo = null;
+                //raiz.Derecho = null;
+            }
+            else
+            {
+                if (nuevo.token.Type == TokenType.MODIFICADOR)
+                {
+                    if (nuevo.token.Text.Equals("*") || nuevo.token.Text.Equals("?"))
+                    {
+                        nuevo.token.Nullable = true;
+                    } else
+                    {
+                        nuevo.token.Nullable = false;
+                    }
+                    if (raiz.Derecho == null || Anterior.Type == TokenType.PCERRADO)
+                    {
+                        nuevo.token.First = raiz.token.First;
+                        nuevo.token.Last = raiz.token.Last;
+                        nuevo.Izquierdo = raiz;
+                        raiz = nuevo;
+                    } else
+                    {
+                        nuevo.token.First = raiz.Derecho.token.First;
+                        nuevo.token.Last = raiz.Derecho.token.Last;
+                        nuevo.Izquierdo = raiz.Derecho;
+                        raiz.Derecho = nuevo;
+                    }
+                }
+                else if (nuevo.token.Type == TokenType.OPCIONAL && nuevo.Izquierdo == null)
+                {
+                    nuevo.Izquierdo = raiz;
+                    raiz = nuevo;
+                }
+                else
+                {
+                    if (raiz.token.Type == TokenType.OPCIONAL && raiz.Derecho == null)
+                    {
+                        raiz.Derecho = nuevo;
+                        raiz.token.Nullable = raiz.Izquierdo.token.Nullable || raiz.Derecho.token.Nullable;
+                        raiz.token.First = raiz.Izquierdo.token.First.Concat(raiz.Derecho.token.First).ToList();
+                        raiz.token.Last = raiz.Izquierdo.token.Last.Concat(raiz.Derecho.token.Last).ToList();
+                    //} else if (raiz.token.Type == TokenType.MODIFICADOR)
+                    //{
+                    //    //nuevo.Derecho = raiz;
+                    //    nuevo.Izquierdo = raiz;
+                    //    raiz = nuevo;
+                    } else
+                    {
+                        NodoToken nuevoConcatenar = new NodoToken();
+                        nuevoConcatenar.token = new Token();
+                        nuevoConcatenar.token.Type = TokenType.CONCATENACION;
+                        nuevoConcatenar.token.Text = ".";
+                        nuevoConcatenar.Izquierdo = raiz;
+                        nuevoConcatenar.Derecho = nuevo;
+                        nuevoConcatenar.token.Nullable = nuevoConcatenar.Izquierdo.token.Nullable && nuevoConcatenar.Derecho.token.Nullable;
+                        if (nuevoConcatenar.Izquierdo.token.Nullable)
+                        {
+                            nuevoConcatenar.token.First = nuevoConcatenar.Izquierdo.token.First.Concat(nuevoConcatenar.Derecho.token.First).ToList();
+                        } else
+                        {
+                            nuevoConcatenar.token.First = nuevoConcatenar.Izquierdo.token.First;
+                        }
+                        if (nuevoConcatenar.Derecho.token.Nullable)
+                        {
+                            nuevoConcatenar.token.Last = nuevoConcatenar.Izquierdo.token.Last.Concat(nuevoConcatenar.Derecho.token.Last).ToList();
+                        }
+                        else
+                        {
+                            nuevoConcatenar.token.Last = nuevoConcatenar.Derecho.token.Last;
+                        }
+                        raiz = nuevoConcatenar;
+                    }
+                }
+            }
+            // actualiza raiz en la lista
+            ListaExpr.RemoveAt(ListaExpr.Count() - 1);
+            ListaExpr.Add(raiz);
+            //Anterior = nuevo.token;
+        }
+
+        public void GeneraArbolExpr ( ParseTree tree )
+        {
+           foreach (ParseNode node in tree.Nodes)
+            {
+                FindTokens(node);
+            }
+           while (ListaExpr.Count() > 1)
+            {
+                NodoToken raizTemporal = ListaExpr.Last();
+                ListaExpr.RemoveAt(ListaExpr.Count() - 1);
+                AgregarToken(raizTemporal);
+            }
+            Raiz = ListaExpr.Last();
+        }
+
+        private void FindTokens(ParseNode node)
+        {
+            foreach (ParseNode n in node.Nodes)
+            {
+                if (n.Token.Type == TokenType.PR_TOKEN)
+                {
+                    if (ListaExpr.Last() != null)
+                    {
+                        if (ListaExpr.Count() > 1)
+                        {
+                            NodoToken raizTemporal = ListaExpr.Last();
+                            ListaExpr.RemoveAt(ListaExpr.Count() - 1);
+                            AgregarToken(raizTemporal);
+                        }
+                        TokensExpr.Append("| ");
+                        NodoToken nuevoOpcional = new NodoToken();
+                        nuevoOpcional.token = new Token();
+                        nuevoOpcional.token.Type = TokenType.OPCIONAL;
+                        nuevoOpcional.token.Text = "|";
+                        AgregarToken(nuevoOpcional);
+                        // Agrupa la nueva expresion
+                        NodoToken nuevaRaiz = null;
+                        ListaExpr.Add(nuevaRaiz);
+                        Anterior = n.Token;
+                    }
+                }
+                if (node.Token.Type == TokenType.SimpleToken)
+                {
+                    if (n.Token.Type == TokenType.IDENTIFICADOR || n.Token.Type == TokenType.MODIFICADOR || n.Token.Type == TokenType.CARACTER)
+                    { 
+                        TokensExpr.Append(n.Token.Text); 
+                        TokensExpr.Append(" ");
+                        NodoToken nuevoToken = new NodoToken();
+                        nuevoToken.token = n.Token;
+                        AgregarToken(nuevoToken);
+                        Anterior = n.Token;
+                    }
+                }
+                if (node.Token.Type == TokenType.OpcionalToken)
+                {
+                    if (n.Token.Type == TokenType.OPCIONAL)
+                    {
+                        TokensExpr.Append(n.Token.Text);
+                        TokensExpr.Append(" ");
+                        NodoToken nuevoToken = new NodoToken();
+                        nuevoToken.token = n.Token;
+                        AgregarToken(nuevoToken);
+                        Anterior = n.Token;
+                    }
+
+                }
+                if (node.Token.Type == TokenType.AgrupaToken)
+                {
+                    if (n.Token.Type == TokenType.PABIERTO)
+                    {
+                        TokensExpr.Append(n.Token.Text);
+                        TokensExpr.Append(" ");
+                        NodoToken nuevaRaiz = null;
+                        ListaExpr.Add(nuevaRaiz);
+                        Anterior = n.Token;
+                    }
+                    if (n.Token.Type == TokenType.PCERRADO)
+                    {
+                        TokensExpr.Append(n.Token.Text);
+                        TokensExpr.Append(" ");
+                        NodoToken raizTemporal = ListaExpr.Last();
+                        ListaExpr.RemoveAt(ListaExpr.Count() - 1);
+                        AgregarToken(raizTemporal);
+                        Anterior = n.Token;
+                    }
+                    if (n.Token.Type == TokenType.MODIFICADOR)
+                    {
+                        TokensExpr.Append(n.Token.Text);
+                        TokensExpr.Append(" ");
+                        NodoToken nuevoToken = new NodoToken();
+                        nuevoToken.token = n.Token;
+                        AgregarToken(nuevoToken);
+                        Anterior = n.Token;
+                    }
+                }
+                FindTokens(n);
+            }
+        }
+
+        public string InFijo()
+        {
+            StringBuilder texto = new StringBuilder();
+            RecorreInfijo(Raiz, texto);
+            return texto.ToString();
+        }
+
+        private void RecorreInfijo(NodoToken nodo, StringBuilder texto)
+        {
+            if (nodo == null) return;
+            RecorreInfijo(nodo.Izquierdo, texto);
+            texto.Append(nodo.token.Text);
+            texto.Append(" ");
+            RecorreInfijo(nodo.Derecho, texto);
+        }
+
+        public List<string[]> TablaFirsLastNullable()
+        {
+            List<string[]> rows = new List<string[]>();
+            RecorreFirstLastNullable(Raiz, rows);
+            return rows;
+        }
+
+        private void RecorreFirstLastNullable(NodoToken nodo, List<string[]> rows)
+        {
+            if (nodo == null) return;
+            RecorreFirstLastNullable(nodo.Izquierdo, rows);
+            string[] row = new string[] { nodo.token.Text, String.Join(", ", nodo.token.First.ToArray()), String.Join(", ", nodo.token.Last.ToArray()), nodo.token.Nullable.ToString() };
+            rows.Add(row);
+            RecorreFirstLastNullable(nodo.Derecho, rows);
+        }
+        public List<string[]> TablaFollow()
+        {
+            List<string[]> rows = new List<string[]>();
+            RecorreFollow(Raiz, rows);
+            return rows;
+        }
+        private void RecorreFollow(NodoToken nodo, List<string[]> rows)
+        {
+            if (nodo == null) return;
+            RecorreFollow(nodo.Izquierdo, rows);
+            if (nodo.token.Type == TokenType.MODIFICADOR && nodo.token.Text == "*")
+            {
+                foreach (int last in nodo.Izquierdo.token.Last)
+                {
+                    int index = BuscaRow(last, rows);
+                    if (index > -1)
+                    {
+                        rows[index][1] = rows[index][1] + "," + String.Join(",", nodo.Izquierdo.token.First.ToArray());
+                    } else
+                    {
+                        string[] row = new string[] { last.ToString(), String.Join(",", nodo.Izquierdo.token.First.ToArray()) };
+                        rows.Add(row);
+                    }
+                }
+            }
+            if (nodo.token.Type == TokenType.CONCATENACION)
+            {
+                foreach (int last in nodo.Izquierdo.token.Last)
+                {
+                    int index = BuscaRow(last, rows);
+                    if (index > -1)
+                    {
+                        rows[index][1] = rows[index][1] + "," + String.Join(",", nodo.Derecho.token.First.ToArray());
+                    }
+                    else
+                    {
+                        string[] row = new string[] { last.ToString(), String.Join(",", nodo.Derecho.token.First.ToArray()) };
+                        rows.Add(row);
+                    }
+                }
+            }
+            RecorreFollow(nodo.Derecho, rows);
+        }
+
+        private int BuscaRow(int hoja, List<string[]> rows)
+        {
+            int index = -1;
+            for (int idx = 0; idx < rows.Count(); idx++)
+            {
+                if (Int32.Parse(rows[idx][0]) == hoja) return idx; 
+            }
+            return index;
+        }
+
+        public string Dotify()
+        {
+            StringBuilder texto = new StringBuilder();
+            texto.AppendLine(GenerateDotHeader());
+            if (Raiz.Izquierdo == null && Raiz.Derecho == null)
+                texto.AppendLine(Raiz.token.Text);
+            else
+                DotifyInfijo(Raiz, texto);
+            texto.AppendLine(GenerateDotFooter());
+            return texto.ToString();
+        }
+
+        private void DotifyInfijo(NodoToken nodo, StringBuilder texto)
+        {
+            if (nodo == null) return;
+            if (nodo.Izquierdo != null)
+            {
+                texto.Append('"' + String.Join(",",nodo.token.First.ToArray()) + (nodo.token.Text.Equals('"') ? ("\\" + '"') : nodo.token.Text) + String.Join(",", nodo.token.Last.ToArray()) + '"');
+                texto.Append(" -> ");
+                texto.AppendLine('"' + String.Join(",", nodo.Izquierdo.token.First.ToArray()) + (nodo.Izquierdo.token.Text.Equals('"') ? ("\\" + '"') : nodo.Izquierdo.token.Text) + String.Join(",", nodo.Izquierdo.token.Last.ToArray()) + '"' + ';');
+                DotifyInfijo(nodo.Izquierdo, texto);
+            }
+            if (nodo.Derecho != null)
+            {
+                texto.Append('"' + String.Join(",", nodo.token.First.ToArray()) + (nodo.token.Text.Equals('"') ? ("\\" + '"') : nodo.token.Text) + String.Join(",", nodo.token.Last.ToArray()) + '"');
+                texto.Append(" -> ");
+                texto.AppendLine('"' + String.Join(",", nodo.Derecho.token.First.ToArray()) + (nodo.Derecho.token.Text.Equals('"') ? ("\\" + '"') : nodo.Derecho.token.Text) + String.Join(",", nodo.Derecho.token.Last.ToArray()) + '"' + ';');
+                DotifyInfijo(nodo.Derecho, texto);
+            }
+        }
+
+        private string GenerateDotHeader()
+        {
+            return @"
+      digraph G {
+        rankdir=BT;
+
+        node [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 10
+          shape = ""record""
+        ]
+
+        edge [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 8
+          arrowhead = ""empty""
+        ]
+";
+        }
+
+        private string GenerateDotFooter()
+        {
+            return "\n}\n";
+        }
+
+    }
+
     #region ParseTree
     [Serializable]
     public class ParseErrors : List<ParseError>
@@ -105,6 +732,117 @@ namespace TinyPG
         {
             return Nodes[0].Eval(this, paramlist);
         }
+
+
+        public string Dotify()
+        {
+            StringBuilder dot = new StringBuilder();
+            ParseTree node = this;
+
+            dot.Append(this.GenerateDotHeader());
+
+            //this.GenerateEntity(dot, node);
+            List<string> tempDot = new List<string>();
+            this.GenerateGeneralizations(tempDot, node);
+            IEnumerable<string> distinctLines = tempDot.Distinct();
+            foreach (string line in distinctLines)
+            {
+                dot.AppendLine(line);
+            }
+
+            dot.Append(this.GenerateDotFooter());
+
+            return dot.ToString();
+        }
+
+        private string GenerateDotHeader()
+        {
+            return @"
+      digraph G {
+        rankdir=BT;
+
+        node [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 10
+          shape = ""record""
+        ]
+
+        edge [
+          fontname = ""Bitstream Vera Sans""
+          fontsize = 8
+          arrowhead = ""empty""
+        ]
+";
+        }
+
+        private string GenerateDotFooter()
+        {
+            return "\n}\n";
+        }
+
+        private void GenerateEntity(StringBuilder dot, ParseNode node)
+        {
+            // Entity [
+            //   label = "{Entity|+ property : type\l ... |+ method() : void\l}"
+            // ]
+            dot.AppendLine("\n");
+            string label = "";
+            label = "\n" + node.Token.Type.ToString() +
+              " [ label = \"{" +  // node.Token.Type.ToString() + "|" +
+              node.Token.Type.ToString() + ':' + node.Token.Value;
+            label += "}\" ]";
+            dot.Append(label);
+
+            foreach (ParseNode n in node.Nodes)
+                GenerateEntity(dot, n);
+        }
+
+        private void GenerateGeneralizations(List<string> lista, ParseNode node)
+        {
+            // Sub1 -> Entity
+            // Sub2 -> Entity
+            // { rank=same Sub1, Sub2 }
+            string label = "";
+            foreach (ParseNode sub in node.Nodes)
+            {
+                GenerateGeneralizations(lista, sub);
+                label = sub.Token.Type.ToString() + " -> " + node.Token.Type.ToString();
+                lista.Add(label);
+            }
+            
+            //if (node.Nodes.Count > 1)
+            //{
+            //    label += "\n{ rank=same " +
+            //      string.Join(",", node.Nodes.Select(s => s.Text)) + "}";
+            //    dot.Append(label);
+            //}
+        }
+
+        // TODO reuse from Emitter ;-)
+        private string PascalCase(string text)
+        {
+            return string.Join("",
+              text.Split('-').Select(x =>
+                x.First().ToString().ToUpper() + x.ToLower().Substring(1)
+              )
+            );
+        }
+
+        private string GenerateType(string type)
+        {
+            if (type == null) { return "Object"; }
+            if (type.Equals("<string>")) { return "string"; }
+            if (type.Equals("<bool>")) { return "bool"; }
+            return this.PascalCase(type);
+        }
+
+        private string PluralSuffix(string text)
+        {
+            if (text.EndsWith("x")) { return "es"; }
+            if (text.EndsWith("s")) { return ""; }
+            return "s";
+        }
+
     }
 
     [Serializable]
@@ -213,6 +951,12 @@ namespace TinyPG
                     break;
                 case TokenType.ListaDefToken:
                     Value = EvalListaDefToken(tree, paramlist);
+                    break;
+                case TokenType.CondicionToken:
+                    Value = EvalCondicionToken(tree, paramlist);
+                    break;
+                case TokenType.OpcionalToken:
+                    Value = EvalOpcionalToken(tree, paramlist);
                     break;
                 case TokenType.DefToken:
                     Value = EvalDefToken(tree, paramlist);
@@ -337,6 +1081,20 @@ namespace TinyPG
         }
 
         protected virtual object EvalListaDefToken(ParseTree tree, params object[] paramlist)
+        {
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
+        }
+
+        protected virtual object EvalCondicionToken(ParseTree tree, params object[] paramlist)
+        {
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
+        }
+
+        protected virtual object EvalOpcionalToken(ParseTree tree, params object[] paramlist)
         {
             foreach (var node in Nodes)
                 node.Eval(tree, paramlist);

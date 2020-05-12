@@ -36,10 +36,14 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.TxtAr = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.rtBox = new System.Windows.Forms.RichTextBox();
-            this.splitter2 = new System.Windows.Forms.Splitter();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtTokens = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.txtEvaluar = new System.Windows.Forms.TextBox();
+            this.txtResultado = new System.Windows.Forms.TextBox();
+            this.btnEvaluar = new System.Windows.Forms.Button();
+            this.btnGenera = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // Nombre
@@ -91,61 +95,95 @@
             // 
             this.flowLayoutPanel1.Controls.Add(this.TxtAr);
             this.flowLayoutPanel1.Controls.Add(this.splitter1);
-            this.flowLayoutPanel1.Controls.Add(this.rtBox);
-            this.flowLayoutPanel1.Controls.Add(this.splitter2);
-            this.flowLayoutPanel1.Controls.Add(this.textBox2);
+            this.flowLayoutPanel1.Controls.Add(this.txtTokens);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 62);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1239, 443);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1415, 311);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // TxtAr
             // 
+            this.TxtAr.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxtAr.Location = new System.Drawing.Point(3, 3);
             this.TxtAr.Multiline = true;
             this.TxtAr.Name = "TxtAr";
             this.TxtAr.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.TxtAr.Size = new System.Drawing.Size(349, 440);
+            this.TxtAr.Size = new System.Drawing.Size(349, 308);
             this.TxtAr.TabIndex = 7;
             // 
             // splitter1
             // 
             this.splitter1.Location = new System.Drawing.Point(358, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 440);
+            this.splitter1.Size = new System.Drawing.Size(3, 308);
             this.splitter1.TabIndex = 10;
             this.splitter1.TabStop = false;
             // 
-            // rtBox
+            // txtTokens
             // 
-            this.rtBox.Location = new System.Drawing.Point(367, 3);
-            this.rtBox.Name = "rtBox";
-            this.rtBox.Size = new System.Drawing.Size(416, 440);
-            this.rtBox.TabIndex = 9;
-            this.rtBox.Text = "";
+            this.txtTokens.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTokens.Location = new System.Drawing.Point(367, 3);
+            this.txtTokens.Multiline = true;
+            this.txtTokens.Name = "txtTokens";
+            this.txtTokens.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtTokens.Size = new System.Drawing.Size(1037, 308);
+            this.txtTokens.TabIndex = 11;
             // 
-            // splitter2
+            // panel1
             // 
-            this.splitter2.Location = new System.Drawing.Point(789, 3);
-            this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(3, 440);
-            this.splitter2.TabIndex = 11;
-            this.splitter2.TabStop = false;
+            this.panel1.Controls.Add(this.txtResultado);
+            this.panel1.Controls.Add(this.txtEvaluar);
+            this.panel1.Location = new System.Drawing.Point(12, 379);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1415, 281);
+            this.panel1.TabIndex = 9;
             // 
-            // textBox2
+            // txtEvaluar
             // 
-            this.textBox2.Location = new System.Drawing.Point(798, 3);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox2.Size = new System.Drawing.Size(435, 440);
-            this.textBox2.TabIndex = 8;
+            this.txtEvaluar.Location = new System.Drawing.Point(0, 3);
+            this.txtEvaluar.Multiline = true;
+            this.txtEvaluar.Name = "txtEvaluar";
+            this.txtEvaluar.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtEvaluar.Size = new System.Drawing.Size(609, 278);
+            this.txtEvaluar.TabIndex = 0;
+            // 
+            // txtResultado
+            // 
+            this.txtResultado.Location = new System.Drawing.Point(616, 4);
+            this.txtResultado.Multiline = true;
+            this.txtResultado.Name = "txtResultado";
+            this.txtResultado.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtResultado.Size = new System.Drawing.Size(796, 267);
+            this.txtResultado.TabIndex = 1;
+            // 
+            // btnEvaluar
+            // 
+            this.btnEvaluar.Location = new System.Drawing.Point(403, 19);
+            this.btnEvaluar.Name = "btnEvaluar";
+            this.btnEvaluar.Size = new System.Drawing.Size(75, 23);
+            this.btnEvaluar.TabIndex = 10;
+            this.btnEvaluar.Text = "Evaluar";
+            this.btnEvaluar.UseVisualStyleBackColor = true;
+            this.btnEvaluar.Click += new System.EventHandler(this.btnEvaluar_Click);
+            // 
+            // btnGenera
+            // 
+            this.btnGenera.Location = new System.Drawing.Point(485, 20);
+            this.btnGenera.Name = "btnGenera";
+            this.btnGenera.Size = new System.Drawing.Size(114, 23);
+            this.btnGenera.TabIndex = 11;
+            this.btnGenera.Text = "Generar Código";
+            this.btnGenera.UseVisualStyleBackColor = true;
+            this.btnGenera.Click += new System.EventHandler(this.btnGenera_Click);
             // 
             // FrmTestGramatica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1255, 511);
+            this.ClientSize = new System.Drawing.Size(1428, 662);
+            this.Controls.Add(this.btnGenera);
+            this.Controls.Add(this.btnEvaluar);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.Leer);
             this.Controls.Add(this.Buscar);
@@ -157,6 +195,8 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,9 +212,12 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.TextBox TxtAr;
         private System.Windows.Forms.Splitter splitter1;
-        private System.Windows.Forms.RichTextBox rtBox;
-        private System.Windows.Forms.Splitter splitter2;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtTokens;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TextBox txtResultado;
+        private System.Windows.Forms.TextBox txtEvaluar;
+        private System.Windows.Forms.Button btnEvaluar;
+        private System.Windows.Forms.Button btnGenera;
     }
 }
 
